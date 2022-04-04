@@ -19,16 +19,15 @@ author = "著者名"
 [[body]]
 files = ["path/to/file1", "path/to/file2", "path/to/file3"] # この順にページを配置
 author = "著者名"
-start_with_right = false # 見開きの左側からページを置く file2 と file3 が見開きで印刷される
+start = "left" # 見開きの左側からページを置く file2 と file3 が見開きで印刷される
 
 [[body]]
 files = ["path/to/file1", "path/to/file2"]
 author = "著者名"
-start_with_right = true # この場合 file1 と file2 が見開きで配置される
+start = "right" # この場合 file1 と file2 が見開きで配置される
 
 [[body]]
 files = ["path/to/file"]
 author = "著者名"
-# start_with_right のキーが無い場合，自動配置される
-# 特に理由が無い限りは指定しない方がよい
+start = "auto" # 自動配置 特に理由がない場合はautoにしておく
 ```
