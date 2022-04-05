@@ -8,6 +8,7 @@
 ```toml
 title = "タイトル" # ex) title = "漫研部誌vol.1 テーマ[春]"
 editor = "編集の名前"
+size = "A5" # 1ページのサイズ A5, A4, B5, B4 を指定
 
 [front]
 path = "path/to/file"
