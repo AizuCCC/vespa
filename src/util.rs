@@ -1,7 +1,7 @@
 use crate::toml_struct::Config;
-use anyhow::{bail, Context, Result};
+use anyhow::{anyhow, bail, Context, Result};
 use std::io::prelude::Read;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub fn parse_arg() -> Result<(PathBuf, PathBuf)> {
     if std::env::args().count() < 3 {
@@ -30,4 +30,51 @@ pub fn read_book_toml(mut path: PathBuf) -> Result<Config> {
         .context("cannot read book.toml")?;
     let config: Config = toml::from_str(&buf).context("parse error in book.toml")?;
     Ok(config)
+}
+
+pub fn check_extension(p: &Path) -> Result<()> {
+    if p.extension().is_none() {
+        bail!("invalid file-type {:?}", p)
+    }
+    let ext = ["png", "jpg", "jpeg"];
+    for e in ext {
+        if p.extension().unwrap() == e {
+            return Ok(());
+        }
+    }
+    bail!("invalid file-type {:?}", p)
+}
+
+fn validate_path_(path: &Path) -> Result<()> {
+    if !path.exists() {
+        bail!("not found {:?}", path);
+    } else if let Err(e) = check_extension(path) {
+        bail!("{:?}", e);
+    }
+    Ok(())
+}
+
+pub fn validate_path(config: &Config) -> Result<()> {
+    let mut err = String::new();
+
+    if let Err(e) = validate_path_(config.front.path.as_path()) {
+        err += &format!("front cover: {:?}\n", e);
+    }
+    if let Err(e) = validate_path_(config.back.path.as_path()) {
+        err += &format!("back cover: {:?}\n", e);
+    }
+
+    for body in &config.body {
+        for path in &body.files {
+            if let Err(e) = validate_path_(path.as_path()) {
+                err += &format!("body: {:?}\n", e);
+            }
+        }
+    }
+
+    if err.is_empty() {
+        Ok(())
+    } else {
+        Err(anyhow!(err))
+    }
 }
