@@ -4,6 +4,8 @@ use std::io::prelude::Read;
 use std::path::{Path, PathBuf};
 
 pub fn parse_arg() -> Result<(PathBuf, PathBuf)> {
+    Ok((PathBuf::from("."), PathBuf::from(".")))
+    /*
     if std::env::args().count() < 3 {
         bail!("missing argument!");
     }
@@ -19,11 +21,13 @@ pub fn parse_arg() -> Result<(PathBuf, PathBuf)> {
     }
 
     Ok((book_path, out_dir))
+    */
 }
 
 pub fn read_book_toml(mut path: PathBuf) -> Result<Config> {
     path.push("book.toml");
-    let mut config = std::fs::File::open(path).context("cannot open or not found book.toml")?;
+    let mut config =
+        std::fs::File::open(path.as_path()).context("cannot open or not found book.toml")?;
     let mut buf = String::new();
     config
         .read_to_string(&mut buf)
@@ -36,7 +40,7 @@ pub fn check_extension(p: &Path) -> Result<()> {
     if p.extension().is_none() {
         bail!("invalid file-type {:?}", p)
     }
-    let ext = ["png", "jpg", "jpeg"];
+    let ext = ["png", "jpg", "jpeg"]; // enum使うべきか？
     for e in ext {
         if p.extension().unwrap() == e {
             return Ok(());
