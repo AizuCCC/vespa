@@ -1,4 +1,3 @@
-use printpdf::Mm;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
@@ -9,6 +8,7 @@ pub enum Size {
     B5,
 }
 
+/*
 impl Size {
     // return (width, heght)
     pub fn into_mm(&self) -> (printpdf::scale::Mm, printpdf::scale::Mm) {
@@ -21,3 +21,4 @@ impl Size {
         }
     }
 }
+*/
