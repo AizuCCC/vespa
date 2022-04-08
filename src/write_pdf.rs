@@ -42,9 +42,11 @@ pub fn construct_browse_pdf(book: &Book, sz: Size) -> Result<PdfDocumentReferenc
                 )?;
             }
             ToC => {
-                rendering_table_of_contents(&layer, &font, &book.toc, width, height);
+                rendering_table_of_contents(&layer, &font, &book.toc, Mm(0.0), width, height);
             }
-            Colophon => { /*rendering_colophon();*/ }
+            Colophon => {
+                rendering_colophon(&layer, &font, &book.colophon, Mm(0.0), width, height);
+            }
             BodyImg(f) => {
                 add_image(layer.clone(), f, Mm(0.0), Mm(0.0), width, height)?;
             }

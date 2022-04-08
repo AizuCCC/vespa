@@ -1,4 +1,5 @@
 use crate::book::ToC;
+use crate::toml_struct::Colophon;
 use anyhow::{Context, Result};
 use printpdf::image_crate::io::Reader as ImageReader;
 use printpdf::image_crate::DynamicImage;
@@ -10,16 +11,50 @@ use printpdf::PdfLayerReference;
 use std::fs::File;
 use std::io::BufReader;
 
+pub fn rendering_colophon(
+    layer: &PdfLayerReference,
+    font: &IndirectFontRef,
+    colophon: &Colophon,
+    offset_width: Mm,
+    _page_width: Mm,
+    page_height: Mm,
+) {
+    layer.begin_text_section();
+
+    layer.set_font(font, 24.0);
+    layer.set_line_height(30.0);
+    layer.set_text_cursor(offset_width + Mm(10.0), page_height / 4.0);
+
+    layer.write_text("奥付", &font);
+    layer.add_line_break();
+
+    layer.set_font(font, 14.0);
+    layer.set_line_height(22.0);
+
+    layer.write_text(format!("発行者      | {}", colophon.publisher), &font);
+    layer.add_line_break();
+    layer.write_text(format!("発行日      | {}", colophon.date_of_issue), &font);
+    layer.add_line_break();
+    layer.write_text(format!("印刷        | {}", colophon.print), &font);
+    layer.add_line_break();
+    layer.write_text(format!("連絡先      | {}", colophon.contact), &font);
+
+    layer.end_text_section();
+}
+
 pub fn rendering_table_of_contents(
     layer: &PdfLayerReference,
     font: &IndirectFontRef,
     toc: &ToC,
-    print_width: Mm,
-    print_height: Mm,
+    offset_width: Mm,
+    page_width: Mm,
+    page_height: Mm,
 ) {
+    layer.begin_text_section();
+
     layer.set_font(font, 24.0);
     layer.set_line_height(30.0);
-    layer.set_text_cursor(print_width / 5.0, print_height / 8.0 * 7.0);
+    layer.set_text_cursor(offset_width + page_width / 5.0, page_height / 8.0 * 7.0);
 
     layer.write_text(&toc.title, &font);
     layer.add_line_break();
@@ -47,6 +82,8 @@ pub fn rendering_table_of_contents(
 
         layer.add_line_break();
     }
+
+    layer.end_text_section();
 }
 
 pub fn add_image(
