@@ -11,6 +11,31 @@ use printpdf::PdfLayerReference;
 use std::fs::File;
 use std::io::BufReader;
 
+pub fn rendering_page_index(
+    layer: &PdfLayerReference,
+    font: &IndirectFontRef,
+    page_idx: usize,
+    offset_width: Mm,
+    page_width: Mm,
+    _page_height: Mm,
+) {
+    layer.begin_text_section();
+    layer.set_font(font, 12.0);
+    match page_idx % 2 {
+        0 => {
+            // left
+            layer.set_text_cursor(Mm(8.0), Mm(8.0));
+            layer.write_text(format!("{}", page_idx), &font);
+        }
+        1 => {
+            // right
+            layer.set_text_cursor(offset_width + page_width - Mm(8.0), Mm(8.0));
+            layer.write_text(format!("{}", page_idx), &font);
+        }
+        _ => panic!("unreachable path"),
+    }
+}
+
 pub fn rendering_colophon(
     layer: &PdfLayerReference,
     font: &IndirectFontRef,
@@ -69,13 +94,13 @@ pub fn rendering_table_of_contents(
 
     for (range, title, author) in &toc.body {
         if range.len() <= 1 {
-            layer.write_text(format!("  P{}: ", range.start), &font);
+            layer.write_text(format!("  P{}   : ", range.start), &font);
         } else {
             layer.write_text(format!("  P{}-{}: ", range.start, range.end - 1), &font);
         }
 
         if let Some(title) = title {
-            layer.write_text(format!("「{}」", title), &font);
+            layer.write_text(format!("\"{}\"", title), &font);
         }
 
         layer.write_text(format!("{}", author), &font);

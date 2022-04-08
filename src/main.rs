@@ -5,7 +5,7 @@ use vespa::main_util::*;
 use vespa::write_pdf::*;
 
 fn main() -> Result<()> {
-    let (book_path, out_dir) = parse_arg()?;
+    let (book_path, _out_dir) = parse_arg()?;
     let config = read_book_toml(book_path)?;
     validate_path(&config)?;
     let book = pagenation(&config)?;

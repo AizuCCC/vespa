@@ -26,7 +26,7 @@ pub fn construct_browse_pdf(book: &Book, sz: Size) -> Result<PdfDocumentReferenc
         width,
         height,
     )?;
-    for page in &book.page[1..] {
+    for (idx, page) in book.page[1..].iter().enumerate() {
         layer_idx += 1;
         let (p, l) = doc.add_page(width, height, format!("layer{}", layer_idx));
         let layer = doc.get_page(p).get_layer(l);
@@ -43,14 +43,18 @@ pub fn construct_browse_pdf(book: &Book, sz: Size) -> Result<PdfDocumentReferenc
             }
             ToC => {
                 rendering_table_of_contents(&layer, &font, &book.toc, Mm(0.0), width, height);
+                rendering_page_index(&layer, &font, idx + 1, Mm(0.0), width, height);
             }
             Colophon => {
                 rendering_colophon(&layer, &font, &book.colophon, Mm(0.0), width, height);
             }
             BodyImg(f) => {
                 add_image(layer.clone(), f, Mm(0.0), Mm(0.0), width, height)?;
+                rendering_page_index(&layer, &font, idx + 1, Mm(0.0), width, height);
             }
-            Blank => {}
+            Blank => {
+                rendering_page_index(&layer, &font, idx + 1, Mm(0.0), width, height);
+            }
             _ => panic!("unreachable pattern!"),
         }
     }
