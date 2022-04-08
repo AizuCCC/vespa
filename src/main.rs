@@ -1,6 +1,7 @@
 use anyhow::Result;
+use std::fs::File;
 use vespa::book::*;
-use vespa::util::*;
+use vespa::main_util::*;
 use vespa::write_pdf::*;
 
 fn main() -> Result<()> {
@@ -9,8 +10,8 @@ fn main() -> Result<()> {
     validate_path(&config)?;
     let book = pagenation(&config)?;
 
-    println!("{:?}", book);
-    write_pdf(&book, config.size, out_dir.as_path())?;
+    let doc = construct_browse_pdf(&book, config.size)?;
+    doc.save(&mut std::io::BufWriter::new(File::create("a.pdf")?))?;
     // write_pagenated_pdf(&book);
     // write_toc(&book);
     Ok(())

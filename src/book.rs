@@ -125,6 +125,11 @@ pub fn pagenation(config: &Config) -> Result<Book> {
     page.push(Page::Colophon);
     page.push(Page::BackCover);
 
+    for _ in 0..page.len() % 4 {
+        // 奥付の前に空白ページを挿入
+        page.insert(page.len() - 2, Page::Blank);
+    }
+
     Ok(Book {
         toc: toc,
         colophon: config.colophon.clone(),
