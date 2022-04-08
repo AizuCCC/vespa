@@ -8,11 +8,10 @@ use printpdf::PdfDocument;
 use printpdf::PdfDocumentReference;
 use std::io::Cursor;
 
-pub fn construct_browse_pdf(book: &Book, sz: Size) -> Result<PdfDocumentReference> {
+pub fn construct_view_pdf(book: &Book, sz: Size) -> Result<PdfDocumentReference> {
     let mut layer_idx = 0;
     let (width, height) = sz.into_mm();
-    let (doc, p, l) =
-        PdfDocument::new("for browsing", width, height, format!("layer{}", layer_idx));
+    let (doc, p, l) = PdfDocument::new("for viewing", width, height, format!("layer{}", layer_idx));
 
     let mut font_reader = Cursor::new(include_bytes!("../assets/MyricaM.TTC").as_ref());
     let font = doc.add_external_font(&mut font_reader).unwrap();

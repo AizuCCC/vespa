@@ -10,9 +10,10 @@ fn main() -> Result<()> {
     validate_path(&config)?;
     let book = pagenation(&config)?;
 
-    let doc = construct_browse_pdf(&book, config.size)?;
-    doc.save(&mut std::io::BufWriter::new(File::create("a.pdf")?))?;
-    // write_pagenated_pdf(&book);
+    let doc = construct_view_pdf(&book, config.size)?;
+    doc.save(&mut std::io::BufWriter::new(File::create("edit.pdf")?))?;
+
+    // let doc = construct_pagenated_pdf(&book);
     // write_toc(&book);
     Ok(())
 }
