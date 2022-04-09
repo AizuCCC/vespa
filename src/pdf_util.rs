@@ -139,16 +139,16 @@ pub fn rendering_table_of_contents(
     layer.add_line_break();
 
     layer.set_font(font, 20.0);
-    layer.write_text(format!("  表紙  :   {}", toc.front_author), &font);
+    layer.write_text(format!("  表紙   :   {}", toc.front_author), &font);
     layer.add_line_break();
-    layer.write_text(format!("  裏表紙: {}", toc.back_author), &font);
+    layer.write_text(format!("  裏表紙 : {}", toc.back_author), &font);
     layer.add_line_break();
 
     for (range, title, author) in &toc.body {
         if range.len() <= 1 {
-            layer.write_text(format!("  P{}   : ", range.start), &font);
+            layer.write_text(format!("  P{}    : ", range.start), &font);
         } else {
-            layer.write_text(format!("  P{}-{}: ", range.start, range.end - 1), &font);
+            layer.write_text(format!("  P{}-{} : ", range.start, range.end - 1), &font);
         }
 
         if let Some(title) = title {
@@ -159,6 +159,7 @@ pub fn rendering_table_of_contents(
 
         layer.add_line_break();
     }
+    layer.write_text(format!("  編集   : {}", toc.editor), &font);
 
     layer.end_text_section();
 }
