@@ -78,7 +78,7 @@ pub fn rendering_page_index(
             layer.write_text(format!("{}", page_idx), &font);
         }
         0 | 2 => {
-            layer.set_text_cursor(offset_width + page_width - Mm(5.0), Mm(5.0));
+            layer.set_text_cursor(offset_width + page_width - Mm(8.0), Mm(5.0));
             layer.write_text(format!("{}", page_idx), &font);
         }
         _ => panic!("unreachable path"),
