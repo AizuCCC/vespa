@@ -26,12 +26,9 @@ pub fn parse_arg() -> Result<(PathBuf, PathBuf)> {
 
 pub fn read_book_toml(mut path: PathBuf) -> Result<Config> {
     path.push("book.toml");
-    let mut config =
-        std::fs::File::open(path.as_path()).context("cannot open or not found book.toml")?;
+    let mut config = std::fs::File::open(path.as_path()).context("cannot open or not found book.toml")?;
     let mut buf = String::new();
-    config
-        .read_to_string(&mut buf)
-        .context("cannot read book.toml")?;
+    config.read_to_string(&mut buf).context("cannot read book.toml")?;
     let config: Config = toml::from_str(&buf).context("parse error in book.toml")?;
     Ok(config)
 }

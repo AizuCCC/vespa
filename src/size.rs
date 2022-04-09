@@ -1,7 +1,7 @@
 use printpdf::scale::Mm;
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub enum Size {
     A4,
     A5,

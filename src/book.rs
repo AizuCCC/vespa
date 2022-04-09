@@ -1,8 +1,8 @@
 use crate::toml_struct::*;
-use anyhow::{Context, Result};
+use anyhow::Result;
 use std::collections::VecDeque;
-use std::fs::File;
 use std::ops::Range;
+use std::path::PathBuf;
 
 #[derive(Debug)]
 pub struct ToC {
@@ -31,8 +31,8 @@ pub enum Page {
     BackCover,
     ToC,
     Colophon,
-    BodyImg(File),
-    // BodyTxt(File),
+    BodyImg(PathBuf),
+    // BodyTxt(Path),
     Blank,
 }
 
@@ -40,8 +40,8 @@ pub enum Page {
 pub struct Book {
     pub toc: ToC,
     pub colophon: Colophon,
-    pub front_cover: File,
-    pub back_cover: File,
+    pub front_cover: PathBuf,
+    pub back_cover: PathBuf,
     pub page: Vec<Page>,
 }
 
@@ -70,17 +70,13 @@ fn pagenation_(
     if !pque.is_empty() {
         let p = pque.pop_front().unwrap();
         for p in &p.files {
-            page.push(Page::BodyImg(
-                File::open(p).with_context(|| format!("cannot open {:?}", p))?,
-            ));
+            page.push(Page::BodyImg(p.to_path_buf()));
         }
         Ok((p.title.clone(), Some(p.author.clone()), p.files.len()))
     } else if !sque.is_empty() {
         let p = sque.pop_front().unwrap();
         for p in &p.files {
-            page.push(Page::BodyImg(
-                File::open(p).with_context(|| format!("cannot open {:?}", p))?,
-            ));
+            page.push(Page::BodyImg(p.to_path_buf()));
         }
         Ok((p.title.clone(), Some(p.author.clone()), p.files.len()))
     } else {
@@ -96,10 +92,6 @@ pub fn pagenation(config: &Config) -> Result<Book> {
         config.back.author.clone(),
         config.editor.clone(),
     );
-    let front = File::open(&config.front.path)
-        .with_context(|| format!("cannot open file {:?}", config.front.path))?;
-    let back = File::open(&config.back.path)
-        .with_context(|| format!("cannot open file {:?}", config.back.path))?;
 
     let mut right_que = collect_body(config, StartPage::Right, [0, 1]);
     let mut left_que = collect_body(config, StartPage::Left, [0, 1]);
@@ -117,8 +109,7 @@ pub fn pagenation(config: &Config) -> Result<Book> {
             _ => panic!(),
         }
         if let Some(author) = author {
-            toc.body
-                .push((page_idx..(page_idx + page_num), title, author));
+            toc.body.push((page_idx..(page_idx + page_num), title, author));
         }
         page_idx += page_num;
     }
@@ -126,15 +117,15 @@ pub fn pagenation(config: &Config) -> Result<Book> {
     page.push(Page::BackCover);
 
     for _ in 0..page.len() % 4 {
-        // 奥付の前に空白ページを挿入
+        // 奥付の前に空白ページを挿入してページ数調整
         page.insert(page.len() - 2, Page::Blank);
     }
 
     Ok(Book {
         toc: toc,
         colophon: config.colophon.clone(),
-        front_cover: front,
-        back_cover: back,
+        front_cover: config.front.path.to_path_buf(),
+        back_cover: config.back.path.to_path_buf(),
         page: page,
     })
 }
