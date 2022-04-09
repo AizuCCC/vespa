@@ -19,6 +19,8 @@ fn main() -> Result<()> {
     let doc = construct_body(&book, config.size.clone())?;
     doc.save(&mut std::io::BufWriter::new(File::create("body.pdf")?))?;
 
-    // write_toc(&book);
+    // concat(cover, body)
+    // save("print.pdf")
+
     Ok(())
 }
