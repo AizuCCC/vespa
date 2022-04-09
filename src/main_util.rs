@@ -1,4 +1,4 @@
-use crate::toml_struct::Config;
+use crate::config::Config;
 use anyhow::{anyhow, bail, Context, Result};
 use std::io::prelude::Read;
 use std::path::{Path, PathBuf};

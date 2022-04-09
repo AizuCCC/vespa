@@ -1,4 +1,4 @@
-use crate::toml_struct::*;
+use crate::config::*;
 use anyhow::Result;
 use std::collections::VecDeque;
 use std::ops::Range;
