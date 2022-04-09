@@ -17,11 +17,11 @@
   - 面付してあるので、そのまま両面印刷できる
 
 ```toml
-title = "タイトル" # ex) title = "漫研部誌vol.1 テーマ[春]"
+title = "タイトル" # 本の名前 例)title = "漫研部誌vol.1 テーマ[春]"
 editor = "編集の名前"
 
 publisher = "発行者" # サークル名(代表者) とかでいいと思う
-date_of_issue = 2022-04-05 # 発行日
+date_of_issue = 2022-04-05 # 発行日 YYYY-MM-DD 形式で表記
 print = "印刷所"
 contact = "@hoge (twitter)" # 連絡先 部長メールアドレスや部のtwitterIDとか
 
@@ -42,6 +42,7 @@ start = "Left" # 見開きの左側からページを置く file2 と file3 が�
 
 [[body]]
 files = ["path/to/file1", "path/to/file2"]
+title = "題名"
 author = "著者名"
 start = "Right" # この場合 file1 と file2 が見開きで配置される
 
@@ -50,6 +51,34 @@ files = ["path/to/file"]
 author = "著者名"
 start = "Auto" # 自動配置 特に理由がない場合はautoにしておく
 ```
+
+## インストール方法
+
+まずは Rust をインストールしてください
+[参考](https://www.rust-lang.org/ja/tools/install)
+
+次にディレクトリ`vespa`内で次のコマンドを実行してください
+```
+$ cargo install --path .
+```
+
+## 使い方
+
+### pdf生成
+原稿をまとめているディレクトリ内で次のコマンドを実行してください
+```
+$ vespa
+```
+`./book.toml` を参照してpdfを生成します
+同名のpdfが存在している場合、上書きしてしまうので気を付けてください
+
+### book.tomlの書き方
+
+細かい注意点を列挙します
+
+- `start` は `Right`, `Left`, `Auto` のみを受け付ける
+  - 大文字小文字に注意してください `right` などは受け付けません
+- [[body]] の `[]` は 2 つ重ねる
 
 ## 対応しているファイル形式
 
