@@ -100,18 +100,18 @@ pub fn pagenation(config: &Config) -> Result<Book> {
     let mut page = Vec::new();
     page.push(Page::FrontCover);
     page.push(Page::ToC);
-    let mut page_idx = 2 as usize;
+    let mut page_idx = 3 as usize;
     while !right_que.is_empty() || !left_que.is_empty() || !auto_que.is_empty() {
-        let (title, author, page_num);
+        let (title, author, num_page);
         match page_idx % 2 {
-            0 => (title, author, page_num) = pagenation_(&mut page, &mut left_que, &mut auto_que)?,
-            1 => (title, author, page_num) = pagenation_(&mut page, &mut right_que, &mut auto_que)?,
+            0 => (title, author, num_page) = pagenation_(&mut page, &mut right_que, &mut auto_que)?,
+            1 => (title, author, num_page) = pagenation_(&mut page, &mut left_que, &mut auto_que)?,
             _ => panic!(),
         }
         if let Some(author) = author {
-            toc.body.push((page_idx..(page_idx + page_num), title, author));
+            toc.body.push((page_idx..(page_idx + num_page), title, author));
         }
-        page_idx += page_num;
+        page_idx += num_page;
     }
     page.push(Page::Colophon);
     page.push(Page::BackCover);
