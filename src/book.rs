@@ -4,6 +4,15 @@ use std::collections::VecDeque;
 use std::ops::Range;
 use std::path::PathBuf;
 
+#[derive(Debug, Clone)]
+pub struct Colophon {
+    pub title: String,
+    pub publisher: String,
+    pub date_of_issue: toml::value::Datetime,
+    pub print: String,
+    pub contact: String,
+}
+
 #[derive(Debug)]
 pub struct ToC {
     pub title: String,
@@ -123,7 +132,13 @@ pub fn pagenation(config: &Config) -> Result<Book> {
 
     Ok(Book {
         toc: toc,
-        colophon: config.colophon.clone(),
+        colophon: Colophon {
+            title: config.title.clone(),
+            publisher: config.publisher.clone(),
+            date_of_issue: config.date_of_issue.clone(),
+            print: config.print.clone(),
+            contact: config.contact.clone(),
+        },
         front_cover: config.front.path.to_path_buf(),
         back_cover: config.back.path.to_path_buf(),
         page: page,

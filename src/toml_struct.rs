@@ -9,14 +9,6 @@ pub enum StartPage {
     Auto,
 }
 
-#[derive(Deserialize, Debug, Clone)]
-pub struct Colophon {
-    pub publisher: String,
-    pub date_of_issue: toml::value::Datetime,
-    pub print: String,
-    pub contact: String,
-}
-
 #[derive(Deserialize, Debug)]
 pub struct Cover {
     pub author: String,
@@ -35,8 +27,12 @@ pub struct Body {
 pub struct Config {
     pub title: String,
     pub size: Size,
+    pub publisher: String,
+    pub date_of_issue: toml::value::Datetime,
+    pub print: String,
+    pub contact: String,
     pub editor: String,
-    pub colophon: Colophon,
+
     pub front: Cover,
     pub back: Cover,
     pub body: Vec<Body>,

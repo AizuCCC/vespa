@@ -13,11 +13,9 @@ fn main() -> Result<()> {
     let doc = construct_view_pdf(&book, config.size.clone())?;
     doc.save(&mut std::io::BufWriter::new(File::create("edit.pdf")?))?;
 
-    let book = pagenation(&config)?;
     let doc = construct_cover(&book, config.size.clone())?;
     doc.save(&mut std::io::BufWriter::new(File::create("cover.pdf")?))?;
 
-    let book = pagenation(&config)?;
     let doc = construct_body(&book, config.size.clone())?;
     doc.save(&mut std::io::BufWriter::new(File::create("body.pdf")?))?;
 

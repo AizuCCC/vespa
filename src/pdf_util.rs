@@ -1,7 +1,7 @@
 use crate::book::Book;
+use crate::book::Colophon;
 use crate::book::Page::*;
 use crate::book::ToC;
-use crate::toml_struct::Colophon;
 use anyhow::{Context, Result};
 use printpdf::image_crate::io::Reader as ImageReader;
 use printpdf::image_crate::DynamicImage;
@@ -72,13 +72,13 @@ pub fn rendering_page_index(
     layer.begin_text_section();
     layer.set_font(font, 12.0);
     match page_idx % 4 {
-        // 紙の表裏と見開きの左右で印刷箇所は4通り
+        // 紙の表裏と見開きの左右で印刷箇所場合分け
         1 | 3 => {
-            layer.set_text_cursor(Mm(8.0), Mm(8.0));
+            layer.set_text_cursor(Mm(5.0), Mm(5.0));
             layer.write_text(format!("{}", page_idx), &font);
         }
         0 | 2 => {
-            layer.set_text_cursor(offset_width + page_width - Mm(8.0), Mm(8.0));
+            layer.set_text_cursor(offset_width + page_width - Mm(5.0), Mm(5.0));
             layer.write_text(format!("{}", page_idx), &font);
         }
         _ => panic!("unreachable path"),
@@ -100,6 +100,9 @@ pub fn rendering_colophon(
     layer.set_text_cursor(offset_width + Mm(10.0), page_height / 4.0);
 
     layer.write_text("奥付", &font);
+    layer.add_line_break();
+    layer.set_font(font, 20.0);
+    layer.write_text(&colophon.title, &font);
     layer.add_line_break();
 
     layer.set_font(font, 14.0);
@@ -136,7 +139,7 @@ pub fn rendering_table_of_contents(
     layer.add_line_break();
 
     layer.set_font(font, 20.0);
-    layer.write_text(format!("  表紙:   {}", toc.front_author), &font);
+    layer.write_text(format!("  表紙  :   {}", toc.front_author), &font);
     layer.add_line_break();
     layer.write_text(format!("  裏表紙: {}", toc.back_author), &font);
     layer.add_line_break();
