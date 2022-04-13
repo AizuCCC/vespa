@@ -3,27 +3,6 @@ use anyhow::{anyhow, bail, Context, Result};
 use std::io::prelude::Read;
 use std::path::{Path, PathBuf};
 
-pub fn parse_arg() -> Result<(PathBuf, PathBuf)> {
-    Ok((PathBuf::from("."), PathBuf::from(".")))
-    /*
-    if std::env::args().count() < 3 {
-        bail!("missing argument!");
-    }
-    let args: Vec<String> = std::env::args().collect();
-    let book_path = std::path::PathBuf::from(&args[1]);
-    let out_dir = std::path::PathBuf::from(&args[2]);
-
-    if !book_path.is_dir() {
-        bail!("book: {:?} is not directory", book_path);
-    }
-    if !out_dir.is_dir() {
-        bail!("output directory: {:?} is not directory", out_dir);
-    }
-
-    Ok((book_path, out_dir))
-    */
-}
-
 pub fn read_book_toml(mut path: PathBuf) -> Result<Config> {
     path.push("book.toml");
     let mut config = std::fs::File::open(path.as_path()).context("cannot open or not found book.toml")?;
@@ -31,6 +10,31 @@ pub fn read_book_toml(mut path: PathBuf) -> Result<Config> {
     config.read_to_string(&mut buf).context("cannot read book.toml")?;
     let config: Config = toml::from_str(&buf).context("parse error in book.toml")?;
     Ok(config)
+}
+
+pub fn canonicalize_path(config: &mut Config, book_path: &Path) -> Result<()> {
+    let concat = |p1, p2: &Path| {
+        let mut ret = PathBuf::from(p1);
+        ret.push(p2);
+        ret
+    };
+
+    config.front.path = concat(book_path, config.front.path.as_path())
+        .canonicalize()
+        .with_context(|| format!("{:?}", config.front.path))?;
+    config.back.path = concat(book_path, config.back.path.as_path())
+        .canonicalize()
+        .with_context(|| format!("{:?}", config.back.path))?;
+
+    for body in &mut config.body {
+        for path in &mut body.files {
+            *path = concat(book_path, path.as_path())
+                .canonicalize()
+                .with_context(|| format!("{:?}", path))?;
+        }
+    }
+
+    Ok(())
 }
 
 pub fn check_extension(p: &Path) -> Result<()> {
@@ -50,7 +54,7 @@ fn validate_path_(path: &Path) -> Result<()> {
     if !path.exists() {
         bail!("not found {:?}", path);
     } else if let Err(e) = check_extension(path) {
-        bail!("{:?}", e);
+        bail!("unsupported format {:?}", e);
     }
     Ok(())
 }
