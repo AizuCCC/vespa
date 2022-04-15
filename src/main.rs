@@ -28,47 +28,62 @@ fn main() -> Result<()> {
     let book = Arc::new(pagenation(&config)?);
     let mut threads = vec![];
 
+    let (tx, rx) = std::sync::mpsc::channel();
+
     {
+        let tx = tx.clone();
         let mut pdf_path = book_dir.clone();
         pdf_path.push("book.pdf");
         let config = Arc::clone(&config);
         let book = Arc::clone(&book);
         threads.push(thread::spawn(move || -> Result<()> {
+            tx.send(("book", "generating pdf in memory (uncompressed)"))?;
             let doc = construct_view_pdf(&book, config.size.clone())?;
+            tx.send(("book", "compressing and saving pdf"))?;
             doc.save(&mut std::io::BufWriter::new(File::create(pdf_path.as_path())?))?;
+            tx.send(("book", "done"))?;
             Ok(())
         }));
     }
 
     {
+        let tx = tx.clone();
         let mut pdf_path = book_dir.clone();
         pdf_path.push("cover.pdf");
         let config = Arc::clone(&config);
         let book = Arc::clone(&book);
         threads.push(thread::spawn(move || -> Result<()> {
+            tx.send(("cover", "generating pdf in memory (uncompressed)"))?;
             let doc = construct_cover(&book, config.size.clone())?;
+            tx.send(("cover", "compressing and saving pdf"))?;
             doc.save(&mut std::io::BufWriter::new(File::create(pdf_path.as_path())?))?;
+            tx.send(("cover", "done"))?;
             Ok(())
         }));
     }
 
     {
+        let tx = tx.clone();
         let mut pdf_path = book_dir.clone();
         pdf_path.push("body.pdf");
         let config = Arc::clone(&config);
         let book = Arc::clone(&book);
         threads.push(thread::spawn(move || -> Result<()> {
+            tx.send(("body", "generating pdf in memory (uncompressed)"))?;
             let doc = construct_body(&book, config.size.clone())?;
+            tx.send(("body", "compressing and saving pdf"))?;
             doc.save(&mut std::io::BufWriter::new(File::create(pdf_path.as_path())?))?;
+            tx.send(("body", "done"))?;
             Ok(())
         }));
     }
 
-    for h in threads {
-        if let Err(e) = h.join().unwrap() {
-            println!("{:?}", e);
-        }
+    drop(tx);
+    for msg in rx {
+        println!("{}: {}", msg.0, msg.1);
     }
+
+    println!("all processes completed successfully");
 
     Ok(())
 }
