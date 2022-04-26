@@ -26,4 +26,4 @@ Root: HKCR; Subkey: "Directory\Background\shell\vespa"; ValueType: string; Value
 Root: HKCR; Subkey: "Directory\Background\shell\vespa\command"; ValueType: string; ValueData: "cmd /K ""{app}\vespa.exe"" -d %v & echo press enter to exit & pause > nul & exit"; Flags: uninsdeletekey;
 
 [Files]
-Source: "./target/release/vespa.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\target\x86_64-pc-windows-msvc\release\vespa.exe"; DestDir: "{app}"; Flags: ignoreversion
