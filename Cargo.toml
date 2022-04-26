@@ -1,6 +1,6 @@
 [package]
 name = "vespa"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["toyama1710 <toyama@toyama1710.net>"]
 license-file = "LICENSE"
